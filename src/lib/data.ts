@@ -67,3 +67,40 @@ export const chats: Chat[] = [
         ],
     }
 ];
+
+
+export interface Concern {
+  id: number;
+  userId: number;
+  title: string;
+  description: string;
+  status: 'New' | 'In Progress' | 'Resolved';
+  submittedAt: string;
+}
+
+export const concerns: Concern[] = [
+  {
+    id: 1,
+    userId: 9,
+    title: 'Event Schedule Conflict',
+    description: 'The upcoming Leadership Summit on July 28th conflicts with a local holiday that many members observe. Could we consider rescheduling?',
+    status: 'New',
+    submittedAt: '2024-07-18',
+  },
+  {
+    id: 2,
+    userId: 6,
+    title: 'Mentorship Program Feedback',
+    description: 'The new mentorship program is a great initiative, but the matching process seems a bit random. Some pairs are not a good fit. Perhaps we can introduce a preference form.',
+    status: 'In Progress',
+    submittedAt: '2024-07-15',
+  },
+  {
+    id: 3,
+    userId: 10,
+    title: 'Resource Library Access',
+    description: "I'm having trouble accessing the new articles in the resource library. It keeps giving me a permission error.",
+    status: 'Resolved',
+    submittedAt: '2024-07-12',
+  },
+];
