@@ -17,10 +17,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Users, ShieldAlert, BookOpen } from "lucide-react"
 import { users } from "@/lib/data"
+import { cn } from "@/lib/utils"
 
 
 export default function DashboardPage() {
   const recentMembers = users.slice(0, 5);
+
+  const cardClass = "rounded-2xl shadow-sm border-border/20 animate-fade-in-up";
 
   return (
     <div className="flex flex-col gap-8">
@@ -29,7 +32,7 @@ export default function DashboardPage() {
         <p className="text-muted-foreground">Welcome back! Here's a summary of your organization.</p>
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <Card className="rounded-2xl shadow-sm">
+        <Card className={cn(cardClass)} style={{animationDelay: '0.1s'}}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Members</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
@@ -39,7 +42,7 @@ export default function DashboardPage() {
             <p className="text-xs text-muted-foreground">+2 since last week</p>
           </CardContent>
         </Card>
-        <Card className="rounded-2xl shadow-sm">
+        <Card className={cn(cardClass)} style={{animationDelay: '0.2s'}}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Active Concerns</CardTitle>
             <ShieldAlert className="h-4 w-4 text-muted-foreground" />
@@ -49,7 +52,7 @@ export default function DashboardPage() {
             <p className="text-xs text-muted-foreground">+1 since yesterday</p>
           </CardContent>
         </Card>
-        <Card className="rounded-2xl shadow-sm">
+        <Card className={cn(cardClass)} style={{animationDelay: '0.3s'}}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Lessons Completed</CardTitle>
             <BookOpen className="h-4 w-4 text-muted-foreground" />
@@ -62,7 +65,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-4 rounded-2xl shadow-sm">
+        <Card className={cn(cardClass, "col-span-4")} style={{animationDelay: '0.4s'}}>
           <CardHeader>
             <CardTitle>Recent Members</CardTitle>
             <CardDescription>
@@ -103,7 +106,7 @@ export default function DashboardPage() {
             </Table>
           </CardContent>
         </Card>
-        <Card className="col-span-3 rounded-2xl shadow-sm">
+        <Card className={cn(cardClass, "col-span-3")} style={{animationDelay: '0.5s'}}>
           <CardHeader>
             <CardTitle>Upcoming Events</CardTitle>
             <CardDescription>Plan and prepare for upcoming activities.</CardDescription>
