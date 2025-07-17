@@ -3,7 +3,7 @@ export interface User {
   id: number;
   name: string;
   email: string;
-  role: 'Chairperson' | 'Vice-Chair' | 'Secretary' | 'Treasurer' | 'PRO' | 'Welfare Officer' | 'Flame of Fairness' | 'Outreach Officer' | 'Member' | 'Developer';
+  role: 'Developer' | 'Chairperson' | 'Vice-Chair' | 'Secretary' | 'Vice-Secretary' | 'Treasurer' | 'Public Relations Officer' | 'Welfare Officer' | 'Flame of Fairness Officer' | 'Outreach & Partnership Officer' | 'Member';
   avatar: string;
   password?: string;
 }
@@ -13,10 +13,10 @@ export const users: User[] = [
   { id: 2, name: 'Ben Carter', email: 'vicechair@shieldherlight.com', role: 'Vice-Chair', avatar: 'https://placehold.co/100x100.png', password: 'password123', },
   { id: 3, name: 'Chloe Davis', email: 'secretary@shieldherlight.com', role: 'Secretary', avatar: 'https://placehold.co/100x100.png', password: 'password123', },
   { id: 4, name: 'David Evans', email: 'treasurer@shieldherlight.com', role: 'Treasurer', avatar: 'https://placehold.co/100x100.png', password: 'password123', },
-  { id: 5, name: 'Ella Foster', email: 'pro@shieldherlight.com', role: 'PRO', avatar: 'https://placehold.co/100x100.png', password: 'password123', },
+  { id: 5, name: 'Ella Foster', email: 'pro@shieldherlight.com', role: 'Public Relations Officer', avatar: 'https://placehold.co/100x100.png', password: 'password123', },
   { id: 6, name: 'Frank Green', email: 'welfare@shieldherlight.com', role: 'Welfare Officer', avatar: 'https://placehold.co/100x100.png', password: 'password123', },
-  { id: 7, name: 'Grace Hill', email: 'flame@shieldherlight.com', role: 'Flame of Fairness', avatar: 'https://placehold.co/100x100.png', password: 'password123', },
-  { id: 8, name: 'Henry Irwin', email: 'outreach@shieldherlight.com', role: 'Outreach Officer', avatar: 'https://placehold.co/100x100.png', password: 'password123', },
+  { id: 7, name: 'Grace Hill', email: 'flame@shieldherlight.com', role: 'Flame of Fairness Officer', avatar: 'https://placehold.co/100x100.png', password: 'password123', },
+  { id: 8, name: 'Henry Irwin', email: 'outreach@shieldherlight.com', role: 'Outreach & Partnership Officer', avatar: 'https://placehold.co/100x100.png', password: 'password123', },
   { id: 9, name: 'Ivy Jones', email: 'member1@shieldherlight.com', role: 'Member', avatar: 'https://placehold.co/100x100.png', password: 'password123', },
   { id: 10, name: 'Jack King', email: 'member2@shieldherlight.com', role: 'Member', avatar: 'https://placehold.co/100x100.png', password: 'password123', },
   { id: 11, name: 'Matthew Legend', email: 'legendmatthew32@gmail.com', role: 'Developer', avatar: 'https://placehold.co/100x100.png', password: '0000', },
@@ -27,6 +27,7 @@ export interface ChatMessage {
   userId: number;
   text: string;
   time: string;
+  imageUrl?: string;
 }
 
 export interface Chat {
@@ -174,7 +175,7 @@ export const discussions: DiscussionTopic[] = [
       },
       {
         id: 2,
-        userId: 8, // Henry Irwin (Outreach Officer)
+        userId: 8, // Henry Irwin (Outreach & Partnership Officer)
         text: "That's a fantastic idea, Ivy! We could partner with the local library. I can look into that.",
         createdAt: '2024-07-21T12:15:00Z',
       }
