@@ -18,11 +18,43 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { lessons as initialLessons, Lesson, users } from '@/lib/data';
-import { useAuth } from '@/contexts/auth-provider';
+import { useAuth, User } from '@/contexts/auth-provider';
 import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { format } from 'date-fns';
+
+// Placeholder Data
+export interface Lesson {
+  id: number;
+  title: string;
+  description: string;
+  imageUrl: string;
+  authorId: string;
+  createdAt: string;
+}
+
+const users: Partial<User>[] = [
+    { id: '1', name: 'Alice Johnson', role: 'Chairperson', avatar: 'https://placehold.co/100x100.png?text=A' },
+];
+
+const initialLessons: Lesson[] = [
+    {
+        id: 1,
+        title: 'Introduction to GBV',
+        description: 'A foundational lesson on understanding Gender-Based Violence, its forms, and its impact on society.',
+        imageUrl: 'https://placehold.co/600x400.png',
+        authorId: '1',
+        createdAt: new Date().toISOString(),
+    },
+    {
+        id: 2,
+        title: 'Conflict Resolution Techniques',
+        description: 'Learn effective strategies for de-escalating conflicts and promoting peaceful resolutions.',
+        imageUrl: 'https://placehold.co/600x400.png',
+        authorId: '1',
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(),
+    },
+];
 
 export default function LessonsPage() {
   const [lessons, setLessons] = React.useState<Lesson[]>(initialLessons);
@@ -185,7 +217,7 @@ export default function LessonsPage() {
                    <div className="flex items-center gap-2">
                         <Avatar className="h-8 w-8">
                           <AvatarImage src={author?.avatar} />
-                          <AvatarFallback>{author?.name.charAt(0)}</AvatarFallback>
+                          <AvatarFallback>{author?.name?.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <span>{author?.name}</span>
                    </div>
@@ -198,3 +230,5 @@ export default function LessonsPage() {
     </div>
   );
 }
+
+    

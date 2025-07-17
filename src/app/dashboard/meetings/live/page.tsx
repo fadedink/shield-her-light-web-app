@@ -18,7 +18,6 @@ import {
   Smile,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { users as allUsers, User } from '@/lib/data';
 import { Badge } from '@/components/ui/badge';
 import {
   Select,
@@ -29,10 +28,20 @@ import {
 } from "@/components/ui/select"
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { User } from '@/contexts/auth-provider';
+
+// Placeholder data
+const allUsers: Partial<User>[] = [
+    { id: '1', name: 'You', role: 'Chairperson', avatar: 'https://placehold.co/100x100.png?text=Y' },
+    { id: '2', name: 'Bob Williams', role: 'Secretary', avatar: 'https://placehold.co/100x100.png?text=B' },
+    { id: '3', name: 'Charlie Brown', role: 'Member', avatar: 'https://placehold.co/100x100.png?text=C' },
+    { id: '4', name: 'Diana Miller', role: 'Member', avatar: 'https://placehold.co/100x100.png?text=D' },
+];
+
 
 type AttendanceStatus = 'Present' | 'Absent' | 'Absent with Apology';
 
-interface Participant extends User {
+interface Participant extends Partial<User> {
   attendance: AttendanceStatus;
   isHandRaised: boolean;
 }
@@ -60,7 +69,7 @@ export default function LiveMeetingPage() {
     allUsers.map(user => ({
       ...user,
       // Current user is present by default
-      attendance: user.id === 1 ? 'Present' : 'Absent', 
+      attendance: user.id === '1' ? 'Present' : 'Absent', 
       isHandRaised: false,
     }))
   );
@@ -107,7 +116,7 @@ export default function LiveMeetingPage() {
     }
   }, [isCameraOn, toast]);
   
-  const handleAttendanceChange = (userId: number, status: AttendanceStatus) => {
+  const handleAttendanceChange = (userId: string, status: AttendanceStatus) => {
     setParticipants(prev =>
       prev.map(p => (p.id === userId ? { ...p, attendance: status } : p))
     );
@@ -126,8 +135,8 @@ export default function LiveMeetingPage() {
     }, 4000);
   };
 
-  const currentUser = participants.find(p => p.id === 1); // Assuming user 1 is the current user
-  const otherParticipants = participants.filter(p => p.id !== 1 && p.attendance === 'Present');
+  const currentUser = participants.find(p => p.id === '1'); // Assuming user 1 is the current user
+  const otherParticipants = participants.filter(p => p.id !== '1' && p.attendance === 'Present');
 
 
   return (
@@ -161,7 +170,7 @@ export default function LiveMeetingPage() {
                         <div className="flex flex-col items-center gap-2 text-muted-foreground">
                             <Avatar className="h-24 w-24">
                                 <AvatarImage src={currentUser?.avatar} />
-                                <AvatarFallback>{currentUser?.name.charAt(0)}</AvatarFallback>
+                                <AvatarFallback>{currentUser?.name?.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <p className="font-semibold">{currentUser?.name}</p>
                         </div>
@@ -180,7 +189,7 @@ export default function LiveMeetingPage() {
                         <div className="flex flex-col items-center gap-2">
                              <Avatar className="h-24 w-24">
                                 <AvatarImage src={p.avatar} />
-                                <AvatarFallback>{p.name.charAt(0)}</AvatarFallback>
+                                <AvatarFallback>{p.name?.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <p className="font-semibold">{p.name}</p>
                         </div>
@@ -262,11 +271,11 @@ export default function LiveMeetingPage() {
                         <div className="flex items-center gap-2">
                            <Avatar className="h-8 w-8">
                                 <AvatarImage src={p.avatar} />
-                                <AvatarFallback>{p.name.charAt(0)}</AvatarFallback>
+                                <AvatarFallback>{p.name?.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <span>{p.name}</span>
                         </div>
-                        <Select value={p.attendance} onValueChange={(value: AttendanceStatus) => handleAttendanceChange(p.id, value)}>
+                        <Select value={p.attendance} onValueChange={(value: AttendanceStatus) => handleAttendanceChange(p.id!, value)}>
                             <SelectTrigger className="w-auto text-xs h-7 px-2">
                                 <SelectValue />
                             </SelectTrigger>
@@ -288,11 +297,11 @@ export default function LiveMeetingPage() {
                         <div className="flex items-center gap-2">
                            <Avatar className="h-8 w-8 opacity-60">
                                 <AvatarImage src={p.avatar} />
-                                <AvatarFallback>{p.name.charAt(0)}</AvatarFallback>
+                                <AvatarFallback>{p.name?.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <span className="text-muted-foreground">{p.name}</span>
                         </div>
-                         <Select value={p.attendance} onValueChange={(value: AttendanceStatus) => handleAttendanceChange(p.id, value)}>
+                         <Select value={p.attendance} onValueChange={(value: AttendanceStatus) => handleAttendanceChange(p.id!, value)}>
                             <SelectTrigger className="w-auto text-xs h-7 px-2">
                                 <SelectValue />
                             </SelectTrigger>
@@ -310,3 +319,5 @@ export default function LiveMeetingPage() {
     </div>
   );
 }
+
+    

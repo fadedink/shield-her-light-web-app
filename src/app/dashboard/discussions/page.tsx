@@ -19,16 +19,46 @@ import {
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import {
-  users,
-  discussions as initialDiscussions,
-  DiscussionTopic,
-  DiscussionResponse,
-} from '@/lib/data';
 import { useAuth } from '@/contexts/auth-provider';
 import { formatDistanceToNow } from 'date-fns';
 import { MessageSquarePlus, Send, MessageCircle } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+
+// Placeholder data
+export interface DiscussionResponse {
+  id: number;
+  userId: string;
+  text: string;
+  createdAt: string;
+}
+
+export interface DiscussionTopic {
+  id: number;
+  title: string;
+  description: string;
+  authorId: string;
+  createdAt: string;
+  responses: DiscussionResponse[];
+}
+
+const users = [
+    { id: '1', name: 'Alice Johnson', avatar: 'https://placehold.co/100x100.png?text=A' },
+    { id: '2', name: 'Bob Williams', avatar: 'https://placehold.co/100x100.png?text=B' },
+];
+
+const initialDiscussions: DiscussionTopic[] = [
+    {
+        id: 1,
+        title: 'Ideas for the Next Community Workshop',
+        description: "Let's brainstorm some topics for our next workshop. I was thinking something around digital safety or financial literacy. What are your thoughts?",
+        authorId: '1',
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
+        responses: [
+            { id: 101, userId: '2', text: 'Financial literacy is a great idea! Many members have asked for this.', createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString() },
+        ],
+    },
+];
+
 
 export default function DiscussionsPage() {
   const { user } = useAuth();
@@ -166,3 +196,5 @@ export default function DiscussionsPage() {
     </div>
   );
 }
+
+    

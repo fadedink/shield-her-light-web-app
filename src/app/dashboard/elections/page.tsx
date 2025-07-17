@@ -6,8 +6,7 @@ import { useAuth } from '@/contexts/auth-provider';
 import { Button } from '@/components/ui/button';
 import { PlusCircle, Gavel, UserCheck, BarChart3, Clock, Loader2, Vote } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { users, elections as initialElections, candidates as initialCandidates, Election, Candidate, User, LeadershipRole } from '@/lib/data';
-import { format, formatDistanceToNow, isFuture } from 'date-fns';
+import { format, isFuture } from 'date-fns';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
@@ -24,6 +23,54 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { User } from '@/contexts/auth-provider';
+
+// Placeholder data
+type LeadershipRole = Exclude<User['role'], 'Member' | 'Developer'>;
+
+interface Candidate {
+  id: number;
+  userId: string;
+  post: LeadershipRole;
+  reason: string;
+}
+
+interface Election {
+    id: number;
+    title: string;
+    status: 'Applying' | 'Voting' | 'Finished';
+    applicationDeadline: string;
+    votingDeadline: string;
+    posts: LeadershipRole[];
+    candidates: Candidate[];
+    votes: { userId: string, candidateId: number }[];
+}
+
+const users: Partial<User>[] = [
+    { id: '1', name: 'Ethan Davis', role: 'Flame of Fairness Officer', avatar: 'https://placehold.co/100x100.png?text=E' },
+    { id: '2', name: 'Fiona Green', role: 'Member', avatar: 'https://placehold.co/100x100.png?text=F' },
+    { id: '3', name: 'George Harris', role: 'Member', avatar: 'https://placehold.co/100x100.png?text=G' },
+];
+
+const initialCandidates: Candidate[] = [
+    { id: 1, userId: '2', post: 'Chairperson', reason: 'I am passionate about our cause and have strong leadership skills.' },
+    { id: 2, userId: '3', post: 'Chairperson', reason: 'I believe I can bring new ideas and energy to the team.' },
+];
+
+const initialElections: Election[] = [
+    {
+        id: 1,
+        title: 'Annual General Election',
+        status: 'Voting',
+        applicationDeadline: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString(), // 1 week ago
+        votingDeadline: new Date(Date.now() + 1000 * 60 * 60 * 24 * 5).toISOString(), // in 5 days
+        posts: ['Chairperson', 'Secretary'],
+        candidates: initialCandidates,
+        votes: [
+            { userId: '1', candidateId: 1 }
+        ],
+    },
+];
 
 const ALL_POSTS: LeadershipRole[] = ['Chairperson', 'Vice-Chair', 'Secretary', 'Vice-Secretary', 'Treasurer', 'Public Relations Officer', 'Welfare Officer', 'Flame of Fairness Officer', 'Outreach & Partnership Officer'];
 
@@ -110,7 +157,7 @@ export default function ElectionsPage() {
       return election.candidates.some(c => c.userId === user?.id);
   }
 
-  const userHasVotedForPost = (election: Election, post: LeadershipRole, userId: number | undefined) => {
+  const userHasVotedForPost = (election: Election, post: LeadershipRole, userId: string | undefined) => {
       if (!userId) return false;
       const postCandidateIds = election.candidates.filter(c => c.post === post).map(c => c.id);
       return election.votes.some(v => v.userId === userId && postCandidateIds.includes(v.candidateId));
@@ -251,7 +298,7 @@ export default function ElectionsPage() {
                                                     <CardHeader className="flex-row items-center gap-4 space-y-0">
                                                         <Avatar className="h-12 w-12">
                                                             <AvatarImage src={candidateUser?.avatar} />
-                                                            <AvatarFallback>{candidateUser?.name.charAt(0)}</AvatarFallback>
+                                                            <AvatarFallback>{candidateUser?.name?.charAt(0)}</AvatarFallback>
                                                         </Avatar>
                                                         <div>
                                                             <CardTitle className="text-lg">{candidateUser?.name}</CardTitle>
@@ -304,3 +351,5 @@ export default function ElectionsPage() {
     </div>
   );
 }
+
+    

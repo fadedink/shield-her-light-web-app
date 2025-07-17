@@ -20,7 +20,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Users, ShieldAlert, BookOpen, Plus, Camera } from "lucide-react"
-import { users, statuses, Status } from "@/lib/data"
 import { cn } from "@/lib/utils"
 import { useAuth } from '@/contexts/auth-provider';
 import {
@@ -34,6 +33,28 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
+
+// Placeholder data to replace removed mock data file
+const users = [
+    { id: 1, name: 'Alice Johnson', email: 'alice@example.com', role: 'Chairperson', avatar: 'https://placehold.co/100x100.png?text=A' },
+    { id: 2, name: 'Bob Williams', email: 'bob@example.com', role: 'Secretary', avatar: 'https://placehold.co/100x100.png?text=B' },
+    { id: 3, name: 'Charlie Brown', email: 'charlie@example.com', role: 'Member', avatar: 'https://placehold.co/100x100.png?text=C' },
+    { id: 4, name: 'Diana Miller', email: 'diana@example.com', role: 'Member', avatar: 'https://placehold.co/100x100.png?text=D' },
+    { id: 5, name: 'Ethan Davis', email: 'ethan@example.com', role: 'Flame of Fairness Officer', avatar: 'https://placehold.co/100x100.png?text=E' }
+];
+
+interface Status {
+  id: number;
+  authorId: number;
+  imageUrl: string;
+}
+
+const statuses: Status[] = [
+  { id: 1, authorId: 1, imageUrl: 'https://placehold.co/400x700.png' },
+  { id: 2, authorId: 2, imageUrl: 'https://placehold.co/400x700.png' },
+  { id: 3, authorId: 5, imageUrl: 'https://placehold.co/400x700.png' },
+];
+
 
 const StatusViewer = ({ statuses, startIndex, onClose }: { statuses: Status[], startIndex: number, onClose: () => void }) => {
     const [currentIndex, setCurrentIndex] = React.useState(startIndex);
@@ -256,3 +277,5 @@ export default function DashboardPage() {
     </div>
   )
 }
+
+    

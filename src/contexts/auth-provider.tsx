@@ -2,7 +2,24 @@
 'use client';
 
 import * as React from 'react';
-import { users as initialUsers, User } from '@/lib/data';
+import { useRouter } from 'next/navigation';
+import { auth, db } from '@/lib/firebase';
+import {
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut,
+  User as FirebaseUser,
+} from 'firebase/auth';
+import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
+
+export interface User {
+  id: string; // Firebase UID
+  name: string;
+  email: string;
+  role: 'Developer' | 'Chairperson' | 'Vice-Chair' | 'Secretary' | 'Vice-Secretary' | 'Treasurer' | 'Public Relations Officer' | 'Welfare Officer' | 'Flame of Fairness Officer' | 'Outreach & Partnership Officer' | 'Member';
+  avatar: string;
+}
 
 interface AuthContextType {
   user: User | null;
@@ -10,91 +27,91 @@ interface AuthContextType {
   login: (email: string, pass: string) => Promise<User | null>;
   logout: () => void;
   signup: (name: string, email: string, pass: string) => Promise<User | null>;
-  updateUserRole: (userId: number, newRole: User['role']) => void;
+  updateUserRole: (userId: string, newRole: User['role']) => Promise<void>;
 }
 
 const AuthContext = React.createContext<AuthContextType | undefined>(undefined);
 
-// In a real app, you'd use a database, but for this prototype, we'll manage users in memory.
-let users = [...initialUsers];
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = React.useState<User | null>(null);
   const [loading, setLoading] = React.useState(true);
+  const router = useRouter();
 
   React.useEffect(() => {
-    try {
-      const storedUser = sessionStorage.getItem('shield-her-light-user');
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
+      if (firebaseUser) {
+        // User is signed in, get their profile from Firestore
+        const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
+        if (userDoc.exists()) {
+          setUser({ id: firebaseUser.uid, ...userDoc.data() } as User);
+        } else {
+          // This case might happen if a user is created in Auth but not in Firestore
+          // Or if you want to handle profile creation post-social-login
+          console.error("No user profile found in Firestore for UID:", firebaseUser.uid);
+          setUser(null);
+        }
+      } else {
+        // User is signed out
+        setUser(null);
       }
-    } catch (error) {
-      console.error('Failed to parse user from session storage', error);
-      sessionStorage.removeItem('shield-her-light-user');
-    } finally {
       setLoading(false);
-    }
+    });
+
+    return () => unsubscribe();
   }, []);
-  
+
   const login = async (email: string, pass: string): Promise<User | null> => {
-    // This is a mock login. In a real app, you'd call an API.
-    const foundUser = users.find(u => u.email.toLowerCase() === email.toLowerCase());
-
-    // Specific check for developer credentials
-    const isDeveloper = (email === 'legendmatthew32@gmail.com' || email === 'gitranvitran@gmail.com') && pass === '0000';
-    if (foundUser?.role === 'Developer' && isDeveloper) {
-        setUser(foundUser);
-        sessionStorage.setItem('shield-her-light-user', JSON.stringify(foundUser));
-        return foundUser;
+    const userCredential = await signInWithEmailAndPassword(auth, email, pass);
+    const userDoc = await getDoc(doc(db, 'users', userCredential.user.uid));
+    if (userDoc.exists()) {
+      const userData = { id: userCredential.user.uid, ...userDoc.data() } as User;
+      // Special check for developers
+      if (userData.role === 'Developer' && pass !== '0000') {
+          await signOut(auth);
+          throw new Error("Invalid credentials for developer account.");
+      }
+      return userData;
     }
-    
-    // Mock login for any other user for easier testing during development
-    if (foundUser && foundUser.role !== 'Developer') {
-        setUser(foundUser);
-        sessionStorage.setItem('shield-her-light-user', JSON.stringify(foundUser));
-        return foundUser;
-    }
-
     return null;
   };
 
-  const logout = () => {
-    setUser(null);
-    sessionStorage.removeItem('shield-her-light-user');
+  const logout = async () => {
+    await signOut(auth);
+    router.push('/login');
   };
 
-  const signup = async (name: string, email: string, pass: string): Promise<User | null> => {
-    const existingUser = users.find(u => u.email.toLowerCase() === email.toLowerCase());
-    if (existingUser) {
-      return null; // User already exists
-    }
+  const signup = async (name: string, email: string, pass:string): Promise<User | null> => {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+    const { user: firebaseUser } = userCredential;
+
+    const role = (email === 'legendmatthew32@gmail.com' || email === 'gitranvitran@gmail.com') ? 'Developer' : 'Member';
 
     const newUser: User = {
-      id: users.length + 1,
+      id: firebaseUser.uid,
       name,
-      email,
-      password: pass,
-      role: 'Member', // Default role for new sign-ups is always Member
-      avatar: 'https://placehold.co/100x100.png',
+      email: firebaseUser.email!,
+      role: role,
+      avatar: `https://placehold.co/100x100.png?text=${name.charAt(0)}`,
     };
-    
-    users.push(newUser);
-    setUser(newUser);
-    sessionStorage.setItem('shield-her-light-user', JSON.stringify(newUser));
-    
+
+    // Create a document in Firestore for the new user
+    await setDoc(doc(db, 'users', firebaseUser.uid), {
+        name: newUser.name,
+        email: newUser.email,
+        role: newUser.role,
+        avatar: newUser.avatar,
+    });
+
     return newUser;
   };
-  
-  const updateUserRole = (userId: number, newRole: User['role']) => {
-      // Update the master list
-      users = users.map(u => (u.id === userId ? { ...u, role: newRole } : u));
-      
-      // If the updated user is the currently logged-in user, update their session
-      if (user && user.id === userId) {
-          const updatedUser = { ...user, role: newRole };
-          setUser(updatedUser);
-          sessionStorage.setItem('shield-her-light-user', JSON.stringify(updatedUser));
-      }
+
+  const updateUserRole = async (userId: string, newRole: User['role']) => {
+    const userDocRef = doc(db, 'users', userId);
+    await updateDoc(userDocRef, { role: newRole });
+    // If the updated user is the currently logged-in user, update their local state
+    if (user && user.id === userId) {
+      setUser({ ...user, role: newRole });
+    }
   };
 
   const value = { user, loading, login, logout, signup, updateUserRole };

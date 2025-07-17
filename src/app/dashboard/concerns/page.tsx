@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -6,11 +7,47 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { users, concerns as initialConcerns, Concern } from "@/lib/data";
 import { Wand2, Loader2 } from "lucide-react";
 import { analyzeConcern } from '@/ai/flows/analyze-concern';
 import { useToast } from '@/hooks/use-toast';
 import { formatDistanceToNow } from 'date-fns';
+import { User } from '@/contexts/auth-provider';
+
+
+// Placeholder data to replace removed mock data file
+const users: Partial<User>[] = [
+    { id: '1', name: 'Alice Johnson', role: 'Chairperson', avatar: 'https://placehold.co/100x100.png?text=A' },
+    { id: '2', name: 'Bob Williams', role: 'Member', avatar: 'https://placehold.co/100x100.png?text=B' },
+    { id: '3', name: 'Charlie Brown', role: 'Member', avatar: 'https://placehold.co/100x100.png?text=C' },
+];
+
+export interface Concern {
+  id: number;
+  title: string;
+  description: string;
+  userId: string;
+  status: 'New' | 'In Progress' | 'Resolved';
+  submittedAt: string;
+}
+
+const initialConcerns: Concern[] = [
+    {
+        id: 1,
+        title: 'Meeting Schedule Conflict',
+        description: 'The upcoming quarterly meeting is scheduled on a public holiday, which might reduce attendance. Suggest we find an alternative date.',
+        userId: '2',
+        status: 'New',
+        submittedAt: new Date(Date.now() - 1000 * 60 * 60 * 8).toISOString(),
+    },
+    {
+        id: 2,
+        title: 'Need for More Outreach Materials',
+        description: 'Our recent community event was a success, but we ran out of flyers and brochures. We need to restock and perhaps design new materials for the next event.',
+        userId: '3',
+        status: 'In Progress',
+        submittedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(),
+    },
+];
 
 type ConcernWithAnalysis = Concern & {
   analysis?: string;
@@ -104,7 +141,7 @@ export default function ConcernsPage() {
                      <div className="flex items-center gap-3">
                         <Avatar className="h-8 w-8">
                           <AvatarImage src={user?.avatar} />
-                          <AvatarFallback>{user?.name.charAt(0)}</AvatarFallback>
+                          <AvatarFallback>{user?.name?.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <div>
                             <p className="text-sm font-medium">{user?.name}</p>
@@ -128,3 +165,5 @@ export default function ConcernsPage() {
     </div>
   );
 }
+
+    

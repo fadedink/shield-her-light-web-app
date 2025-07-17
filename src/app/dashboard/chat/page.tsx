@@ -1,4 +1,7 @@
-import { users, chats } from '@/lib/data';
+
+'use client';
+
+import * as React from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -12,9 +15,43 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useAuth, User } from '@/contexts/auth-provider';
+
+// Placeholder data, will be replaced by Firestore data later
+const placeholderUsers: Omit<User, 'id' | 'email'| 'role'>[] = [
+    { name: 'Chairperson', avatar: 'https://placehold.co/100x100.png?text=C' },
+    { name: 'Secretary', avatar: 'https://placehold.co/100x100.png?text=S' },
+    { name: 'Member 1', avatar: 'https://placehold.co/100x100.png?text=M1' },
+    { name: 'Member 2', avatar: 'https://placehold.co/100x100.png?text=M2' },
+];
+
+const placeholderChats = [
+  {
+    id: 1,
+    name: 'Leadership Team',
+    avatar: 'https://placehold.co/100x100.png?text=LT',
+    messages: [
+      { userId: 0, text: "Good morning team, let's review the agenda for this week's meeting.", time: '10:00 AM' },
+      { userId: 1, text: 'Sounds good. I have the minutes from last week ready.', time: '10:01 AM' },
+      { userId: 2, text: "I'll be joining a few minutes late.", time: '10:02 AM' },
+      { userId: 0, text: "Thanks for the update. We'll start with the budget review.", time: '10:03 AM' },
+    ],
+  },
+  {
+    id: 2,
+    name: 'Community Outreach',
+    avatar: 'https://placehold.co/100x100.png?text=CO',
+    messages: [
+      { userId: 3, text: "The flyers for the event are ready!", time: 'Yesterday' },
+      { userId: 1, text: "Great! Let's coordinate distribution.", time: 'Yesterday' },
+    ],
+  }
+];
+
 
 export default function ChatPage() {
-  const activeChat = chats[0];
+  const { user: currentUser } = useAuth();
+  const activeChat = placeholderChats[0];
 
   return (
     <div className="h-[calc(100vh-4rem)] flex flex-col">
@@ -35,7 +72,7 @@ export default function ChatPage() {
           <Separator />
           <ScrollArea className="flex-1">
             <div className="p-2 space-y-1">
-              {chats.map(chat => (
+              {placeholderChats.map(chat => (
                 <div key={chat.id} className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer ${chat.id === activeChat.id ? 'bg-muted' : 'hover:bg-muted/50'}`}>
                   <Avatar className="h-10 w-10">
                     <AvatarImage src={chat.avatar} />
@@ -90,8 +127,8 @@ export default function ChatPage() {
           <ScrollArea className="flex-1 p-6 bg-secondary/30">
             <div className="space-y-6">
               {activeChat.messages.map((message, index) => {
-                const messageUser = users.find(u => u.id === message.userId);
-                const isCurrentUser = message.userId === 1; // Assuming current user is Chairperson
+                const messageUser = placeholderUsers[message.userId];
+                const isCurrentUser = message.userId === 0; // Assuming current user is Chairperson
                 return (
                   <div key={index} className={`flex items-end gap-3 ${isCurrentUser ? 'justify-end' : 'justify-start'}`}>
                     {!isCurrentUser && (
@@ -102,11 +139,18 @@ export default function ChatPage() {
                     )}
                     <div>
                       <Card className={`max-w-xs md:max-w-md p-3 rounded-2xl ${isCurrentUser ? 'bg-primary text-primary-foreground' : 'bg-card'}`}>
-                         {message.imageUrl && <img src={message.imageUrl} alt="attachment" className="rounded-lg mb-2" data-ai-hint="user uploaded image"/>}
+                         {/* Placeholder for images in chat */}
+                         {/* {message.imageUrl && <img src={message.imageUrl} alt="attachment" className="rounded-lg mb-2" data-ai-hint="user uploaded image"/>} */}
                         <p className="text-sm">{message.text}</p>
                       </Card>
                       <p className={`text-xs text-muted-foreground mt-1 ${isCurrentUser ? 'text-right' : 'text-left'}`}>{messageUser?.name.split(' ')[0]} - {message.time}</p>
                     </div>
+                     {isCurrentUser && (
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={currentUser?.avatar} />
+                        <AvatarFallback>{currentUser?.name.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                    )}
                   </div>
                 );
               })}

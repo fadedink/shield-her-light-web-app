@@ -12,36 +12,67 @@ import {
 } from "@/components/ui/table"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { users as initialUsers, User, LeadershipRole } from "@/lib/data"
 import { Input } from "@/components/ui/input"
-import { Search, MoreVertical } from "lucide-react"
-import { useAuth } from '@/contexts/auth-provider';
+import { Search, Loader2 } from "lucide-react"
+import { useAuth, User } from '@/contexts/auth-provider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
+import { db } from '@/lib/firebase';
+import { collection, onSnapshot } from 'firebase/firestore';
 
 const ALL_ROLES: User['role'][] = ['Chairperson', 'Vice-Chair', 'Secretary', 'Vice-Secretary', 'Treasurer', 'Public Relations Officer', 'Welfare Officer', 'Flame of Fairness Officer', 'Outreach & Partnership Officer', 'Member', 'Developer'];
 
 export default function MembersPage() {
   const { user, updateUserRole } = useAuth();
   const { toast } = useToast();
-  const [users, setUsers] = React.useState<User[]>(initialUsers);
+  const [users, setUsers] = React.useState<User[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [searchTerm, setSearchTerm] = React.useState('');
 
   const isDeveloper = user?.role === 'Developer';
 
-  const handleRoleChange = (userId: number, newRole: User['role']) => {
-    // In a real app, this would be an API call.
-    // For now, we update the local state and the context's mock data.
-    const updatedUsers = users.map(u => u.id === userId ? { ...u, role: newRole } : u);
-    setUsers(updatedUsers);
-    
-    // This function will update the "master" list in the auth context
-    updateUserRole(userId, newRole);
-
-    toast({
-      title: "Role Updated",
-      description: `The user's role has been changed to ${newRole}.`
+  React.useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, "users"), (snapshot) => {
+        const usersData: User[] = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        } as User));
+        setUsers(usersData);
+        setIsLoading(false);
     });
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleRoleChange = async (userId: string, newRole: User['role']) => {
+    try {
+      await updateUserRole(userId, newRole);
+      toast({
+        title: "Role Updated",
+        description: `The user's role has been changed to ${newRole}.`
+      });
+    } catch (error) {
+        console.error("Failed to update role: ", error);
+        toast({
+            variant: 'destructive',
+            title: "Update Failed",
+            description: "Could not update the user's role.",
+        });
+    }
   };
+
+  const filteredUsers = users.filter(u => 
+      u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      u.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  if (isLoading) {
+    return (
+        <div className="flex justify-center items-center h-full">
+            <Loader2 className="h-8 w-8 animate-spin"/>
+        </div>
+    )
+  }
 
   return (
     <div className="flex flex-col gap-8">
@@ -52,7 +83,12 @@ export default function MembersPage() {
       <div className="flex justify-between items-center">
         <div className="relative w-full max-w-sm">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Search members..." className="pl-8" />
+          <Input 
+            placeholder="Search members..." 
+            className="pl-8" 
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+          />
         </div>
       </div>
       <div className="border rounded-2xl shadow-sm">
@@ -66,7 +102,7 @@ export default function MembersPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {users.map((member) => (
+            {filteredUsers.map((member) => (
               <TableRow key={member.id}>
                 <TableCell>
                   <div className="flex items-center gap-3">

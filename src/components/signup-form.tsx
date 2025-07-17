@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -11,7 +12,6 @@ import { Input } from '@/components/ui/input';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -21,7 +21,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { Checkbox } from './ui/checkbox';
-import Link from 'next/link';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -60,18 +59,16 @@ export function SignupForm() {
           description: "We've created your account for you.",
         });
         router.push('/dashboard');
-      } else {
-        toast({
-          variant: 'destructive',
-          title: 'Sign Up Failed',
-          description: 'An account with this email may already exist.',
-        });
       }
-    } catch (error) {
+    } catch (error: any) {
+        let description = 'Something went wrong. Please try again later.';
+        if (error.code === 'auth/email-already-in-use') {
+            description = 'An account with this email already exists.'
+        }
       toast({
         variant: 'destructive',
-        title: 'An error occurred',
-        description: 'Something went wrong. Please try again later.',
+        title: 'Sign Up Failed',
+        description: description,
       });
     } finally {
       setLoading(false);
@@ -171,3 +168,4 @@ export function SignupForm() {
     </Card>
   );
 }
+
