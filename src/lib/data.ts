@@ -8,6 +8,8 @@ export interface User {
   password?: string;
 }
 
+export type LeadershipRole = Exclude<User['role'], 'Member' | 'Developer'>;
+
 export const users: User[] = [
   { id: 1, name: 'Aria Montgomery', email: 'chairperson@shieldherlight.com', role: 'Chairperson', avatar: 'https://placehold.co/100x100.png', password: 'password123', },
   { id: 2, name: 'Ben Carter', email: 'vicechair@shieldherlight.com', role: 'Vice-Chair', avatar: 'https://placehold.co/100x100.png', password: 'password123', },
@@ -189,4 +191,53 @@ export const discussions: DiscussionTopic[] = [
     createdAt: '2024-07-20T09:00:00Z',
     responses: []
   },
+];
+
+
+// --- Elections Data ---
+export interface Candidate {
+  id: number;
+  userId: number;
+  reason: string;
+  post: LeadershipRole;
+}
+
+export interface ElectionVote {
+  userId: number; // The user who voted
+  candidateId: number;
+}
+
+export interface Election {
+  id: number;
+  title: string;
+  status: 'Applying' | 'Voting' | 'Finished';
+  applicationDeadline: string;
+  votingDeadline: string;
+  posts: LeadershipRole[];
+  candidates: Candidate[];
+  votes: ElectionVote[];
+}
+
+// Today + 5 days
+const appDeadline = new Date();
+appDeadline.setDate(appDeadline.getDate() + 5);
+
+// Today + 10 days
+const voteDeadline = new Date();
+voteDeadline.setDate(voteDeadline.getDate() + 10);
+
+export const elections: Election[] = [
+  {
+    id: 1,
+    title: 'Annual Leadership Election',
+    status: 'Applying',
+    applicationDeadline: appDeadline.toISOString(),
+    votingDeadline: voteDeadline.toISOString(),
+    posts: ['Chairperson', 'Secretary', 'Treasurer'],
+    candidates: [
+        { id: 1, userId: 2, post: 'Chairperson', reason: 'I am passionate about leading this organization to new heights.' },
+        { id: 2, userId: 9, post: 'Secretary', reason: 'I am highly organized and believe in transparent communication.' },
+    ],
+    votes: [],
+  }
 ];

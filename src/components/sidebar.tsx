@@ -14,7 +14,8 @@ import {
   ShieldAlert,
   Video,
   ClipboardList,
-  Sparkles
+  Sparkles,
+  Vote
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { UserNav } from './user-nav';
@@ -41,6 +42,7 @@ const navItems = [
   { href: '/dashboard/meetings', icon: NotebookText, label: 'Meetings' },
   { href: '/dashboard/meetings/live', icon: Video, label: 'Live Meeting' },
   { href: '/dashboard/lessons', icon: BookMarked, label: 'Lessons' },
+  { href: '/dashboard/elections', icon: Vote, label: 'Elections' },
   { href: '/dashboard/concerns', icon: ShieldAlert, label: 'Concerns' },
   { href: '/dashboard/assistant', icon: Sparkles, label: 'AI Assistant' },
 ];
