@@ -259,7 +259,7 @@ export const notifications: Notification[] = [
     {
         id: 1,
         title: 'New Election Started',
-        description: 'The "Annual Leadership Election" has begun. Applications are now open.',
+        description: 'The "Annual Leadership Election" has been begun. Applications are now open.',
         createdAt: new Date().toISOString(),
         read: false,
         icon: Vote,
