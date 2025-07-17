@@ -1,3 +1,4 @@
+
 export interface User {
   id: number;
   name: string;
@@ -102,5 +103,41 @@ export const concerns: Concern[] = [
     description: "I'm having trouble accessing the new articles in the resource library. It keeps giving me a permission error.",
     status: 'Resolved',
     submittedAt: '2024-07-12',
+  },
+];
+
+export interface Lesson {
+  id: number;
+  title: string;
+  description: string;
+  imageUrl: string;
+  authorId: number;
+  createdAt: string;
+}
+
+export const lessons: Lesson[] = [
+  {
+    id: 1,
+    title: 'Effective Leadership Communication',
+    description: 'Learn the key strategies for clear, concise, and impactful communication. This lesson covers active listening, non-verbal cues, and providing constructive feedback.',
+    imageUrl: 'https://placehold.co/600x400.png',
+    authorId: 1,
+    createdAt: '2024-07-20',
+  },
+  {
+    id: 2,
+    title: 'Conflict Resolution Techniques',
+    description: 'Discover practical methods for navigating disagreements and finding common ground. This lesson explores negotiation, mediation, and de-escalation strategies.',
+    imageUrl: 'https://placehold.co/600x400.png',
+    authorId: 7,
+    createdAt: '2024-07-18',
+  },
+  {
+    id: 3,
+    title: 'Financial Literacy for Leaders',
+    description: "An introduction to budgeting, financial planning, and resource management for community organizations. Understand financial statements and make informed decisions.",
+    imageUrl: 'https://placehold.co/600x400.png',
+    authorId: 4,
+    createdAt: '2024-07-15',
   },
 ];
