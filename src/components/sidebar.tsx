@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/auth-provider';
 import { cn } from '@/lib/utils';
 import {
-  Shield,
   LayoutDashboard,
   MessageSquare,
   UsersRound,
@@ -45,7 +44,9 @@ export function Sidebar() {
   const pathname = usePathname();
   const { user } = useAuth();
 
-  if (!user) return null;
+  if (!user) {
+    return null;
+  }
 
   return (
     <aside className="fixed left-0 top-0 h-full w-64 border-r bg-card flex flex-col shadow-lg">
