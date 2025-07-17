@@ -1,5 +1,6 @@
 import { LoginForm } from '@/components/login-form';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function LoginPage() {
   return (
@@ -14,21 +15,10 @@ export default function LoginPage() {
         </div>
         <LoginForm />
         <p className="px-8 text-center text-sm text-muted-foreground mt-8">
-          By clicking continue, you agree to our{' '}
-          <a
-            href="/terms"
-            className="underline underline-offset-4 hover:text-primary"
-          >
-            Terms of Service
-          </a>{' '}
-          and{' '}
-          <a
-            href="/privacy"
-            className="underline underline-offset-4 hover:text-primary"
-          >
-            Privacy Policy
-          </a>
-          .
+            Don't have an account?{' '}
+            <Link href="/signup" className="underline underline-offset-4 hover:text-primary">
+                Sign Up
+            </Link>
         </p>
       </div>
     </div>

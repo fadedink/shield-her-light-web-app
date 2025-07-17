@@ -1,16 +1,20 @@
 'use client';
 
 import * as React from 'react';
-import { users, User } from '@/lib/data';
+import { users as initialUsers, User } from '@/lib/data';
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
   login: (email: string, pass: string) => Promise<User | null>;
   logout: () => void;
+  signup: (name: string, email: string, pass: string) => Promise<User | null>;
 }
 
 const AuthContext = React.createContext<AuthContextType | undefined>(undefined);
+
+// In a real app, you'd use a database, but for this prototype, we'll manage users in memory.
+let users = [...initialUsers];
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = React.useState<User | null>(null);
@@ -29,7 +33,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
     }
   }, []);
-
+  
   const login = async (email: string, pass: string): Promise<User | null> => {
     // This is a mock login. In a real app, you'd call an API.
     const foundUser = users.find(u => u.email.toLowerCase() === email.toLowerCase());
@@ -57,7 +61,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     sessionStorage.removeItem('shield-her-light-user');
   };
 
-  const value = { user, loading, login, logout };
+  const signup = async (name: string, email: string, pass: string): Promise<User | null> => {
+    const existingUser = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+    if (existingUser) {
+      return null; // User already exists
+    }
+
+    const newUser: User = {
+      id: users.length + 1,
+      name,
+      email,
+      password: pass,
+      role: 'Member', // Default role for new sign-ups
+      avatar: 'https://placehold.co/100x100.png',
+    };
+    
+    users.push(newUser);
+    setUser(newUser);
+    sessionStorage.setItem('shield-her-light-user', JSON.stringify(newUser));
+    
+    return newUser;
+  };
+
+  const value = { user, loading, login, logout, signup };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
