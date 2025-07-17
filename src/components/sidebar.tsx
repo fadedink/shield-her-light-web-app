@@ -27,6 +27,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Textarea } from './ui/textarea';
+import Image from 'next/image';
 
 
 const navItems = [
@@ -47,9 +48,7 @@ export function Sidebar() {
   return (
     <aside className="fixed left-0 top-0 h-full w-64 border-r bg-card flex flex-col shadow-lg">
       <div className="flex h-16 items-center gap-3 border-b px-6">
-        <div className="bg-primary text-primary-foreground p-2 rounded-lg">
-          <Shield className="h-6 w-6" />
-        </div>
+        <Image src="/logo.png" alt="Shield Her Light Logo" width={32} height={32} />
         <h1 className="text-lg font-bold font-headline">ShieldHerLight</h1>
       </div>
       <nav className="flex-1 p-4 space-y-2">
