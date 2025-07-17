@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   Mic,
   MicOff,
@@ -14,6 +15,7 @@ import {
   Hand,
   PhoneOff,
   Users,
+  Smile,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { users as allUsers, User } from '@/lib/data';
@@ -35,12 +37,21 @@ interface Participant extends User {
   isHandRaised: boolean;
 }
 
+interface Reaction {
+  id: number;
+  emoji: string;
+  x: number;
+}
+
+const reactionEmojis = ['👍', '❤️', '😂', '😮', '🎉', '👏'];
+
 export default function LiveMeetingPage() {
   const [isMicOn, setIsMicOn] = React.useState(true);
   const [isCameraOn, setIsCameraOn] = React.useState(false);
   const [isHandRaised, setIsHandRaised] = React.useState(false);
   const [isParticipantsPanelOpen, setIsParticipantsPanelOpen] = React.useState(true);
   const [hasCameraPermission, setHasCameraPermission] = React.useState<boolean | null>(null);
+  const [reactions, setReactions] = React.useState<Reaction[]>([]);
 
   const { toast } = useToast();
   const videoRef = React.useRef<HTMLVideoElement>(null);
@@ -101,13 +112,39 @@ export default function LiveMeetingPage() {
       prev.map(p => (p.id === userId ? { ...p, attendance: status } : p))
     );
   };
+  
+  const handleReaction = (emoji: string) => {
+    const newReaction: Reaction = {
+      id: Date.now(),
+      emoji,
+      x: Math.random() * 80 + 10, // random horizontal position from 10% to 90%
+    };
+    setReactions(prev => [...prev, newReaction]);
+    // Remove the reaction after the animation duration
+    setTimeout(() => {
+      setReactions(prev => prev.filter(r => r.id !== newReaction.id));
+    }, 4000);
+  };
 
   const currentUser = participants.find(p => p.id === 1); // Assuming user 1 is the current user
   const otherParticipants = participants.filter(p => p.id !== 1 && p.attendance === 'Present');
 
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] bg-card text-card-foreground rounded-2xl shadow-sm overflow-hidden">
+    <div className="relative flex h-[calc(100vh-4rem)] bg-card text-card-foreground rounded-2xl shadow-sm overflow-hidden">
+      {/* Reactions Overlay */}
+      <div className="absolute inset-0 pointer-events-none z-20 overflow-hidden">
+        {reactions.map(r => (
+          <div
+            key={r.id}
+            className="absolute bottom-20 text-4xl animate-float-up"
+            style={{ left: `${r.x}%` }}
+          >
+            {r.emoji}
+          </div>
+        ))}
+      </div>
+
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         <header className="p-4 border-b">
@@ -164,21 +201,42 @@ export default function LiveMeetingPage() {
         </main>
 
         {/* Control Bar */}
-        <footer className="p-4 border-t bg-background/50 flex items-center justify-between">
+        <footer className="p-4 border-t bg-background/50 flex items-center justify-between z-10">
           <div className="text-sm text-muted-foreground font-medium">
             {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <Button variant={isMicOn ? 'secondary' : 'destructive'} size="icon" className="rounded-full" onClick={() => setIsMicOn(!isMicOn)}>
               {isMicOn ? <Mic /> : <MicOff />}
             </Button>
             <Button variant={isCameraOn ? 'secondary' : 'destructive'} size="icon" className="rounded-full" onClick={() => setIsCameraOn(!isCameraOn)}>
               {isCameraOn ? <Video /> : <VideoOff />}
             </Button>
-            <Button variant="secondary" size="icon" className={cn("rounded-full", isHandRaised && "bg-primary/80 text-primary-foreground")} onClick={() => setIsHandRaised(!isHandRaised)}>
+            <Separator orientation="vertical" className="h-8 hidden sm:block" />
+             <Button variant="secondary" size="icon" className={cn("rounded-full", isHandRaised && "bg-primary/80 text-primary-foreground")} onClick={() => setIsHandRaised(!isHandRaised)}>
               <Hand />
             </Button>
-             <Separator orientation="vertical" className="h-8" />
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="secondary" size="icon" className="rounded-full">
+                  <Smile />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-2 mb-2">
+                <div className="flex gap-2">
+                  {reactionEmojis.map(emoji => (
+                    <button
+                      key={emoji}
+                      onClick={() => handleReaction(emoji)}
+                      className="text-2xl p-1 rounded-md hover:bg-muted transition-colors"
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+              </PopoverContent>
+            </Popover>
+             <Separator orientation="vertical" className="h-8 hidden sm:block" />
              <Button variant="secondary" size="icon" className="rounded-full" onClick={() => setIsParticipantsPanelOpen(!isParticipantsPanelOpen)}>
                 <Users />
             </Button>
@@ -252,4 +310,3 @@ export default function LiveMeetingPage() {
     </div>
   );
 }
-
