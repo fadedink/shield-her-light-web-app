@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -11,7 +12,8 @@ import {
   NotebookText,
   BookMarked,
   ShieldAlert,
-  Video
+  Video,
+  ClipboardList
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { UserNav } from './user-nav';
@@ -33,6 +35,7 @@ import Image from 'next/image';
 const navItems = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { href: '/dashboard/chat', icon: MessageSquare, label: 'Chat' },
+  { href: '/dashboard/discussions', icon: ClipboardList, label: 'Discussions' },
   { href: '/dashboard/members', icon: UsersRound, label: 'Members' },
   { href: '/dashboard/meetings', icon: NotebookText, label: 'Meetings' },
   { href: '/dashboard/meetings/live', icon: Video, label: 'Live Meeting' },
@@ -61,7 +64,7 @@ export function Sidebar() {
             href={item.href}
             className={cn(
               'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-muted',
-              (pathname === item.href || (item.href === '/dashboard/meetings' && pathname.startsWith('/dashboard/meetings/'))) && 'bg-primary/10 text-primary font-semibold'
+              (pathname === item.href || (item.href.startsWith('/dashboard/meetings') && pathname.startsWith('/dashboard/meetings')) || (item.href.startsWith('/dashboard/discussions') && pathname.startsWith('/dashboard/discussions'))) && 'bg-primary/10 text-primary font-semibold'
             )}
           >
             <item.icon className="h-5 w-5" />

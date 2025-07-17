@@ -141,3 +141,51 @@ export const lessons: Lesson[] = [
     createdAt: '2024-07-15',
   },
 ];
+
+export interface DiscussionResponse {
+  id: number;
+  userId: number;
+  text: string;
+  createdAt: string;
+}
+
+export interface DiscussionTopic {
+  id: number;
+  authorId: number;
+  title: string;
+  description: string;
+  createdAt: string;
+  responses: DiscussionResponse[];
+}
+
+export const discussions: DiscussionTopic[] = [
+  {
+    id: 1,
+    authorId: 3, // Chloe Davis (Secretary)
+    title: 'Brainstorming our next community outreach initiative',
+    description: "Let's gather ideas for our next community outreach program. What causes are you passionate about? What kind of impact do you want to make? Share your thoughts!",
+    createdAt: '2024-07-21T10:00:00Z',
+    responses: [
+      {
+        id: 1,
+        userId: 9, // Ivy Jones
+        text: "I think a workshop on digital literacy for seniors in our community would be incredibly valuable.",
+        createdAt: '2024-07-21T11:30:00Z',
+      },
+      {
+        id: 2,
+        userId: 8, // Henry Irwin (Outreach Officer)
+        text: "That's a fantastic idea, Ivy! We could partner with the local library. I can look into that.",
+        createdAt: '2024-07-21T12:15:00Z',
+      }
+    ]
+  },
+  {
+    id: 2,
+    authorId: 1, // Aria Montgomery (Chairperson)
+    title: 'Feedback on the new member onboarding process',
+    description: 'For our newer members, how was your onboarding experience? What did we do well, and where can we improve? Your feedback is crucial for helping new members feel welcome and integrated.',
+    createdAt: '2024-07-20T09:00:00Z',
+    responses: []
+  },
+];
