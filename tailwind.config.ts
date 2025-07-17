@@ -1,3 +1,4 @@
+
 import type {Config} from 'tailwindcss';
 
 export default {
@@ -105,12 +106,17 @@ export default {
             transform: 'translateY(-150px)',
           },
         },
+         'progress-bar': {
+          from: { width: '0%' },
+          to: { width: '100%' },
+        }
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'fade-in-up': 'fade-in-up 0.5s ease-out forwards',
         'float-up': 'float-up 4s ease-out forwards',
+        'progress-bar': 'progress-bar linear forwards',
       },
     },
   },

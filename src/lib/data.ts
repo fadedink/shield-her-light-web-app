@@ -1,4 +1,5 @@
-import { Icon, Vote, BookMarked, Bell, KeyRound } from "lucide-react";
+
+import { Icon, Vote, BookMarked, Bell, KeyRound, GalleryVerticalEnd } from "lucide-react";
 
 
 export interface User {
@@ -49,7 +50,7 @@ export const chats: Chat[] = [
         messages: [
             { userId: 1, text: "Good morning, everyone. Let's get an update on the upcoming summit.", time: '10:30 AM' },
             { userId: 4, text: "The budget is approved and funds are ready for allocation.", time: '10:32 AM' },
-            { userId: 5, text: "I'll have the promotional materials ready by EOD.", time: '10:33 AM' },
+            { userId: 5, text: "I'll have the promotional materials ready by EOD.", time: '10:33 AM', imageUrl: 'https://placehold.co/400x300.png' },
             { userId: 1, text: "Excellent. Let's keep the momentum going.", time: '10:35 AM' },
         ],
     },
@@ -287,4 +288,77 @@ export const notifications: Notification[] = [
         read: true,
         icon: KeyRound,
     },
+];
+
+// --- Stories ---
+export interface StoryComment {
+    id: number;
+    authorId: number;
+    text: string;
+    createdAt: string;
+}
+
+export interface Story {
+    id: number;
+    authorId: number;
+    type: 'text' | 'image' | 'video';
+    content: string;
+    imageUrl?: string;
+    likes: number[]; // array of user IDs
+    comments: StoryComment[];
+    createdAt: string;
+}
+
+export const stories: Story[] = [
+    {
+        id: 1,
+        authorId: 5, // Ella Foster (PRO)
+        type: 'image',
+        content: "So excited for our upcoming Leadership Summit! It's going to be a fantastic opportunity for growth and connection. #ShieldHerLight #Leadership",
+        imageUrl: 'https://placehold.co/800x600.png',
+        likes: [1, 2, 4, 9, 10],
+        comments: [
+            { id: 1, authorId: 1, text: 'Amazing! Can\'t wait.', createdAt: new Date().toISOString() },
+            { id: 2, authorId: 9, text: 'Looks great!', createdAt: new Date().toISOString() }
+        ],
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 8).toISOString(),
+    },
+    {
+        id: 2,
+        authorId: 8, // Henry Irwin (Outreach)
+        type: 'text',
+        content: "Just had a great meeting with a potential new partner organization. Big things are coming for our community outreach efforts!",
+        likes: [1, 3, 7],
+        comments: [],
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 26).toISOString(),
+    }
+];
+
+// --- Statuses ---
+export interface Status {
+    id: number;
+    authorId: number;
+    imageUrl: string;
+    createdAt: string;
+}
+
+export const statuses: Status[] = [
+    {
+        id: 1,
+        authorId: 1,
+        imageUrl: 'https://placehold.co/1080x1920.png',
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
+    },
+    {
+        id: 2,
+        authorId: 2,
+        imageUrl: 'https://placehold.co/1080x1920.png',
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 4).toISOString(),
+    },
+    {
+        id: 3,
+        authorId: 5,
+        imageUrl: 'https://placehold.co/1080x1920.png',
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
+    }
 ];
