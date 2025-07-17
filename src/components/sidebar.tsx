@@ -13,7 +13,8 @@ import {
   BookMarked,
   ShieldAlert,
   Video,
-  ClipboardList
+  ClipboardList,
+  Sparkles
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { UserNav } from './user-nav';
@@ -41,6 +42,7 @@ const navItems = [
   { href: '/dashboard/meetings/live', icon: Video, label: 'Live Meeting' },
   { href: '/dashboard/lessons', icon: BookMarked, label: 'Lessons' },
   { href: '/dashboard/concerns', icon: ShieldAlert, label: 'Concerns' },
+  { href: '/dashboard/assistant', icon: Sparkles, label: 'AI Assistant' },
 ];
 
 export function Sidebar() {
@@ -64,7 +66,7 @@ export function Sidebar() {
             href={item.href}
             className={cn(
               'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-muted',
-              (pathname === item.href || (item.href.startsWith('/dashboard/meetings') && pathname.startsWith('/dashboard/meetings')) || (item.href.startsWith('/dashboard/discussions') && pathname.startsWith('/dashboard/discussions'))) && 'bg-primary/10 text-primary font-semibold'
+              (pathname.startsWith(item.href) && item.href !== '/dashboard') || (pathname === '/dashboard' && item.href === '/dashboard') ? 'bg-primary/10 text-primary font-semibold' : ''
             )}
           >
             <item.icon className="h-5 w-5" />
