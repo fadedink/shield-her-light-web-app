@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -19,11 +20,16 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
+import { Checkbox } from './ui/checkbox';
+import Link from 'next/link';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
   email: z.string().email({ message: 'Please enter a valid email.' }),
   password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
+  agreeToConstitution: z.boolean().default(false).refine(val => val === true, {
+      message: 'You must agree to the constitution to create an account.',
+  }),
 });
 
 type UserFormValue = z.infer<typeof formSchema>;
@@ -40,6 +46,7 @@ export function SignupForm() {
       name: '',
       email: '',
       password: '',
+      agreeToConstitution: false,
     },
   });
 
@@ -133,6 +140,27 @@ export function SignupForm() {
                 </FormItem>
               )}
             />
+             <FormField
+                control={form.control}
+                name="agreeToConstitution"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-3">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        disabled={loading}
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel className="cursor-pointer">
+                        I have read and agree to the Shield Her Light constitution.
+                      </FormLabel>
+                      <FormMessage />
+                    </div>
+                  </FormItem>
+                )}
+              />
             <Button disabled={loading} className="w-full" type="submit">
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Create Account
