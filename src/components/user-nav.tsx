@@ -31,17 +31,11 @@ export function UserNav() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-auto w-full justify-start p-2 text-left">
-          <div className="flex items-center gap-3">
+        <Button variant="ghost" className="relative h-10 w-10 rounded-full">
             <Avatar className="h-9 w-9">
               <AvatarImage src={user.avatar} alt={user.name} />
               <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
             </Avatar>
-            <div className="truncate">
-              <p className="text-sm font-medium leading-none">{user.name}</p>
-              <p className="text-xs leading-none text-muted-foreground truncate">{user.email}</p>
-            </div>
-          </div>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>

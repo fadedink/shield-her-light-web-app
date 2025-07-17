@@ -1,3 +1,5 @@
+import { Icon, Vote, BookMarked, Bell, KeyRound } from "lucide-react";
+
 
 export interface User {
   id: number;
@@ -240,4 +242,49 @@ export const elections: Election[] = [
     ],
     votes: [],
   }
+];
+
+// --- Notifications ---
+export interface Notification {
+    id: number;
+    title: string;
+    description: string;
+    createdAt: string;
+    read: boolean;
+    icon: Icon;
+}
+
+export const notifications: Notification[] = [
+    {
+        id: 1,
+        title: 'New Election Started',
+        description: 'The "Annual Leadership Election" has begun. Applications are now open.',
+        createdAt: new Date().toISOString(),
+        read: false,
+        icon: Vote,
+    },
+    {
+        id: 2,
+        title: 'New Lesson Available',
+        description: '"Conflict Resolution Techniques" has been added to the lessons library.',
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
+        read: false,
+        icon: BookMarked,
+    },
+    {
+        id: 3,
+        title: 'Upcoming Meeting',
+        description: 'The weekly leadership sync is scheduled for tomorrow at 10 AM.',
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(),
+        read: true,
+        icon: Bell,
+    },
+     {
+        id: 4,
+        title: 'Password Change Recommended',
+        description: 'For security, we recommend changing your password every 90 days.',
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString(),
+        read: true,
+        icon: KeyRound,
+    },
 ];
