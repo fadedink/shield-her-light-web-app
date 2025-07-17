@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -9,6 +10,7 @@ interface AuthContextType {
   login: (email: string, pass: string) => Promise<User | null>;
   logout: () => void;
   signup: (name: string, email: string, pass: string) => Promise<User | null>;
+  updateUserRole: (userId: number, newRole: User['role']) => void;
 }
 
 const AuthContext = React.createContext<AuthContextType | undefined>(undefined);
@@ -38,16 +40,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // This is a mock login. In a real app, you'd call an API.
     const foundUser = users.find(u => u.email.toLowerCase() === email.toLowerCase());
 
-    const isDevUser = (email === 'legendmatthew32@gmail.com' || email === 'gitranvitran@gmail.com') && pass === '0000';
-
-    if (foundUser && (foundUser.password === pass || isDevUser)) {
+    // Specific check for developer credentials
+    const isDeveloper = (email === 'legendmatthew32@gmail.com' || email === 'gitranvitran@gmail.com') && pass === '0000';
+    if (foundUser?.role === 'Developer' && isDeveloper) {
         setUser(foundUser);
         sessionStorage.setItem('shield-her-light-user', JSON.stringify(foundUser));
         return foundUser;
     }
     
-    // Mock for any user for easier testing
-    if (foundUser) {
+    // Mock login for any other user for easier testing during development
+    if (foundUser && foundUser.role !== 'Developer') {
         setUser(foundUser);
         sessionStorage.setItem('shield-her-light-user', JSON.stringify(foundUser));
         return foundUser;
@@ -72,7 +74,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       name,
       email,
       password: pass,
-      role: 'Member', // Default role for new sign-ups
+      role: 'Member', // Default role for new sign-ups is always Member
       avatar: 'https://placehold.co/100x100.png',
     };
     
@@ -82,8 +84,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     
     return newUser;
   };
+  
+  const updateUserRole = (userId: number, newRole: User['role']) => {
+      // Update the master list
+      users = users.map(u => (u.id === userId ? { ...u, role: newRole } : u));
+      
+      // If the updated user is the currently logged-in user, update their session
+      if (user && user.id === userId) {
+          const updatedUser = { ...user, role: newRole };
+          setUser(updatedUser);
+          sessionStorage.setItem('shield-her-light-user', JSON.stringify(updatedUser));
+      }
+  };
 
-  const value = { user, loading, login, logout, signup };
+  const value = { user, loading, login, logout, signup, updateUserRole };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

@@ -1,3 +1,7 @@
+
+'use client';
+
+import * as React from 'react';
 import {
   Table,
   TableBody,
@@ -8,11 +12,37 @@ import {
 } from "@/components/ui/table"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { users } from "@/lib/data"
+import { users as initialUsers, User, LeadershipRole } from "@/lib/data"
 import { Input } from "@/components/ui/input"
-import { Search } from "lucide-react"
+import { Search, MoreVertical } from "lucide-react"
+import { useAuth } from '@/contexts/auth-provider';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useToast } from '@/hooks/use-toast';
+
+const ALL_ROLES: User['role'][] = ['Chairperson', 'Vice-Chair', 'Secretary', 'Vice-Secretary', 'Treasurer', 'Public Relations Officer', 'Welfare Officer', 'Flame of Fairness Officer', 'Outreach & Partnership Officer', 'Member', 'Developer'];
 
 export default function MembersPage() {
+  const { user, updateUserRole } = useAuth();
+  const { toast } = useToast();
+  const [users, setUsers] = React.useState<User[]>(initialUsers);
+
+  const isDeveloper = user?.role === 'Developer';
+
+  const handleRoleChange = (userId: number, newRole: User['role']) => {
+    // In a real app, this would be an API call.
+    // For now, we update the local state and the context's mock data.
+    const updatedUsers = users.map(u => u.id === userId ? { ...u, role: newRole } : u);
+    setUsers(updatedUsers);
+    
+    // This function will update the "master" list in the auth context
+    updateUserRole(userId, newRole);
+
+    toast({
+      title: "Role Updated",
+      description: `The user's role has been changed to ${newRole}.`
+    });
+  };
+
   return (
     <div className="flex flex-col gap-8">
       <div>
@@ -32,26 +62,26 @@ export default function MembersPage() {
               <TableHead>Name</TableHead>
               <TableHead>Role</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead className="text-right">ID Number</TableHead>
+              {isDeveloper && <TableHead className="text-right">Manage Role</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
-            {users.map((user) => (
-              <TableRow key={user.id}>
+            {users.map((member) => (
+              <TableRow key={member.id}>
                 <TableCell>
                   <div className="flex items-center gap-3">
                     <Avatar className="h-10 w-10">
-                      <AvatarImage src={user.avatar} alt={user.name} />
-                      <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                      <AvatarImage src={member.avatar} alt={member.name} />
+                      <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="font-medium">{user.name}</p>
-                      <p className="text-sm text-muted-foreground">{user.email}</p>
+                      <p className="font-medium">{member.name}</p>
+                      <p className="text-sm text-muted-foreground">{member.email}</p>
                     </div>
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant={user.role === 'Developer' || user.role === 'Chairperson' ? 'default' : 'secondary'}>{user.role}</Badge>
+                  <Badge variant={member.role === 'Developer' || member.role === 'Chairperson' ? 'default' : 'secondary'}>{member.role}</Badge>
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
@@ -62,7 +92,25 @@ export default function MembersPage() {
                     Active
                   </div>
                 </TableCell>
-                <TableCell className="text-right font-mono">{`#${String(user.id).padStart(5, '0')}`}</TableCell>
+                {isDeveloper && (
+                  <TableCell className="text-right">
+                    <Select
+                      defaultValue={member.role}
+                      onValueChange={(newRole: User['role']) => handleRoleChange(member.id, newRole)}
+                      // You can't change your own role
+                      disabled={member.id === user?.id}
+                    >
+                      <SelectTrigger className="w-[180px] ml-auto">
+                        <SelectValue placeholder="Select a role" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {ALL_ROLES.map(r => (
+                          <SelectItem key={r} value={r}>{r}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </TableCell>
+                )}
               </TableRow>
             ))}
           </TableBody>
