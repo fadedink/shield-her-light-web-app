@@ -21,6 +21,7 @@ import { useAuth } from '@/contexts/auth-provider';
 import { formatDistanceToNow } from 'date-fns';
 import { ThumbsUp, MessageSquare, Send, Image as ImageIcon, Video as VideoIcon } from 'lucide-react';
 import Image from 'next/image';
+import { cn } from '@/lib/utils';
 
 export default function StoriesPage() {
   const { user } = useAuth();
@@ -205,3 +206,4 @@ export default function StoriesPage() {
   );
 }
 
+    
