@@ -7,8 +7,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { summarizeMeetingMinutes } from '@/ai/flows/summarize-meeting-minutes';
 import { suggestTalkingPoints } from '@/ai/flows/suggest-talking-points';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Wand2, Lightbulb } from 'lucide-react';
+import { Loader2, Wand2, Lightbulb, Video } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import Link from 'next/link';
 
 export default function MeetingsPage() {
   const [transcript, setTranscript] = React.useState('');
@@ -79,10 +80,19 @@ export default function MeetingsPage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight font-headline">Meeting Assistant</h1>
-        <p className="text-muted-foreground">Use AI to streamline your meeting workflow.</p>
+       <div className="flex justify-between items-center">
+        <div>
+            <h1 className="text-3xl font-bold tracking-tight font-headline">Meeting Assistant</h1>
+            <p className="text-muted-foreground">Use AI to streamline your meeting workflow.</p>
+        </div>
+        <Button asChild>
+            <Link href="/dashboard/meetings/live">
+                <Video className="mr-2 h-4 w-4"/>
+                Join Live Meeting
+            </Link>
+        </Button>
       </div>
+
 
       <div className="grid md:grid-cols-2 gap-8">
         <Card className="rounded-2xl shadow-sm">
